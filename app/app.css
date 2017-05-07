@@ -1,0 +1,229 @@
+
+body {
+  font-size: 14px;
+  font-family: founderSong;
+}
+
+body, html, p, h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box
+}
+
+*::before, *::after {
+  box-sizing: border-box
+}
+
+body, html {
+  height: 100%;
+}
+
+.app {
+  height: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  position: relative;
+  max-width: 540px;
+}
+
+.page {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0
+}
+
+.loading {
+  background: url(./images/loading.jpeg) no-repeat;
+  background-size: 100%;
+}
+
+.game {
+  background-size: 100%;
+  text-align: center;
+  color: rgba(94, 76, 59, 1.00)
+}
+
+.game .bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background: url(./images/bg-game.jpg) no-repeat;
+  background-size: 100%;
+}
+
+.game-timer {
+  position: absolute;
+  right: 0.52rem;
+  top: 0.38rem;
+  width: 0.8rem;
+}
+
+.game-timer-icon {
+  width: 100%;
+  height: 0.8rem;
+  background: url(./images/icon-timer.png) no-repeat;
+  background-size: cover;
+}
+
+.game-timer-icon-num {
+  font-size: 0.55rem;
+  margin-top: 0.1rem;
+  font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial;
+}
+
+.game-helper {
+  position: absolute;
+  right: 1rem;
+  top: 10.7rem;
+  width: 1.3rem;
+  height: 1.84rem;
+  background: url(./images/helper.png) no-repeat;
+  background-size: cover;
+}
+
+.game-source {
+  position: absolute;
+  bottom: 0.4rem;
+  font-size: 0.34rem;
+  width: 90%;
+  left: 5%;
+}
+
+.game-keyword {
+  position: absolute;
+  left: 3.4rem;
+  top: 1.5rem;
+  width: 4.2rem;
+  height: 2.2rem;
+  background: url(./images/keyword.png) no-repeat;
+  background-size: 100%;
+}
+
+.game-keyword .word {
+  font-size: 0.9rem;
+  color: rgba(240, 228, 198, 1.00);
+  display: block;
+  width: 1.8rem;
+  margin: 0.34rem 0 0 0.6rem;
+  line-height: 1.6rem;
+}
+
+.game-title {
+  position: absolute;
+  left: 0;
+  top: 4.6rem;
+  width: 100%;
+  font-weight: 700;
+  font-size: 0.8rem;
+  font-family: '楷体', '楷体_GB2312', founderSong;
+}
+
+.game-title span {
+  display: inline-block;
+
+}
+
+.game-title span:first-child:nth-last-child(2),
+.game-title span:first-child:nth-last-child(2) ~ span,
+.game-title span:first-child:nth-last-child(3),
+.game-title span:first-child:nth-last-child(3) ~ span{
+  margin: 0 5px;
+}
+
+.game-title span:first-child:nth-last-child(4),
+.game-title span:first-child:nth-last-child(4) ~ span {
+  margin: 0 3px;
+}
+
+.game-author {
+  position: absolute;
+  left: 0;
+  top: 5.5rem;
+  width: 100%;
+  font-size: 0.37rem;
+}
+
+.game-poem {
+  position: absolute;
+  left: 0;
+  top: 6.33rem;
+  width: 100%;
+}
+
+.game-poem .word {
+  width: 1rem;
+  margin: 0 0.06rem;
+  display: inline-block;
+  font-size: 0.7rem;
+}
+
+.game-poem.write {
+  top: 7.25rem;
+}
+
+.game-poem.write .word {
+  height: 1rem;
+  line-height: 1rem;
+  background: url("./images/word-off.png") no-repeat;
+  background-size: cover;
+}
+
+.game-poem.write .word.active {
+  background-image: url("./images/word.png");
+}
+
+.game-boxes {
+  position: absolute;
+  left: 2.8rem;
+  top: 8.55rem;
+  width: 4.4rem;
+  height: 4.4rem;
+  background: rgba(237, 126, 110, 0.1);
+  padding: 0.32rem 0.3rem;
+  box-sizing: border-box;
+  background: url("./images/panel.png") no-repeat;
+  background-size: cover;
+}
+
+.game-boxes .box {
+  width: 1.4rem;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  font-size: 0.75rem;
+  display: block;
+  float: left;
+}
+
+.game-boxes .box:nth-of-type(1), .game-boxes .box:nth-of-type(2), .game-boxes .box:nth-of-type(3), .game-boxes .box:nth-of-type(7), .game-boxes .box:nth-of-type(8), .game-boxes .box:nth-of-type(9) {
+  height: 1.2rem;
+  line-height: 1.2rem;
+}
+
+.game-boxes .box:nth-of-type(1), .game-boxes .box:nth-of-type(3), .game-boxes .box:nth-of-type(4), .game-boxes .box:nth-of-type(6), .game-boxes .box:nth-of-type(7), .game-boxes .box:nth-of-type(9) {
+  width: 1.2rem;
+}
+
+.game-btn {
+  position: absolute;
+  left: 2.15rem;
+  top: 13.8rem;
+  width: 2.35rem;
+  height: 0.92rem;
+  background: url("./images/btn.png") no-repeat;
+  background-size: cover;
+}
+
+.game-reset {
+  position: absolute;
+  right: 2.15rem;
+  left: auto;
+  top: 13.8rem;
+  width: 2.35rem;
+  height: 0.92rem;
+  background: url("./images/btn.png") no-repeat;
+  background-size: cover;
+}

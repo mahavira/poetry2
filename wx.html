@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
+    <script type="text/javascript" src="http://channel.dev.pdmi.cn/wechat/js/weixin/jweixin-1.0.0.js"></script>
+    <script type="text/javascript">
+      var str = '<script type="text/javascript" src="http://channel.dev.pdmi.cn/wechat/sign?random=' + Math.random() + '"\/><\/script>'
+      str += '<script type="text/javascript" src="http://channel.dev.pdmi.cn/wechat/js/weixin/app.js"><\/script>'
+      document.write(str)
+    </script>
+    <script type="text/javascript">
+      var url = 'http%3A%2F%2Fchannel.dev.pdmi.cn%2Fwechat%2Fwoauth%2Fcode'
+      var state = 'http://ff.oysd0628.cn/wx/wx.html'
+      var pdmi_appid = 'wx2986f41ab9c05538'
+      var path = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + pdmi_appid + '&redirect_uri=' + url + '&response_type=code&scope=snsapi_userinfo&state=' + state + '#wechat_redirect'
+      var code = null
+      var userinfo = {}
+
+      window.onload = function () {
+        code = getQueryString('code')
+        if (code === null)
+          window.location.href = path
+        else {
+          submit()
+        }
+      }
+
+      function submit () {
+        $.ajax({
+          url: 'http://channel.dev.pdmi.cn/wechat/oauth/user?code=' + getQueryString('code'),
+          type: 'get',
+          jsonp: 'callback',
+          dataType: 'jsonp',
+          success: function (data) {
+            if (!data || !data.nickname) {
+              window.location.href = path
+              return false
+            }
+            if (!data.nickname) {
+              window.location.href = path
+            } else {
+              alert('success')
+              alert(JSON.stringify(data))
+              fetchUserInfo()
+              fetchScore(2, 10)
+              fetchRanking()
+            }
+          },
+          error: function () {
+            window.location.href = path
+          }
+        })
+      }
+
+      function fetchUserInfo () {
+        $.ajax({
+          url: 'http://channel.dev.pdmi.cn/wechat/score/userInfo',
+          type: 'get',
+          jsonp: 'callback',
+          dataType: 'jsonp',
+          success: function (data) {
+            alert(JSON.stringify(data))
+          }
+        })
+      }
+      function fetchScore (level, score) {
+        $.ajax({
+          url: 'http://channel.dev.pdmi.cn/wechat/score/' + level + '/' + score,
+          type: 'get',
+          jsonp: 'callback',
+          dataType: 'jsonp',
+          success: function (data) {
+            alert(JSON.stringify(data))
+          }
+        })
+      }
+      function fetchRanking () {
+        $.ajax({
+          url: 'http://channel.dev.pdmi.cn/wechat/score/ranking/50',
+          type: 'get',
+          jsonp: 'callback',
+          dataType: 'jsonp',
+          success: function (data) {
+            alert(JSON.stringify(data))
+          }
+        })
+      }
+      function getQueryString (name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+        var r = window.location.search.substr(1).match(reg)
+        if (r != null) {
+          return unescape(r[2])
+        }
+        return null
+      }
+    </script>
+</head>
+<body>
+
+</body>
+</html>
