@@ -46,7 +46,7 @@ export function setWxShare (title, desc) {
 /**
  * 获取分享内容
  */
-export default function setShareContent (score) {
+export default function setShareContent (score, round) {
   var rank = rankContent(score)
   if (!rank) return
 

@@ -18,14 +18,19 @@ export default function getQuestion (level, type) {
   switch (level) {
     case 1:
       return getQuestion1(level)
+      break
     case 2:
       return getQuestion2(level)
+      break
     case 3:
       return getQuestion3(level)
+      break
     case 4:
       return getQuestion4(level)
+      break
     case 5:
       return getQuestion5(level)
+      break
   }
 }
 /**

@@ -6,6 +6,7 @@ import setShareContent from './share'
 import getQuestion, { resetQuestion } from './QuestionLibrary'
 import { PASS_QUESTION_COUNT } from './constant'
 import { fetchUserInfo, fetchScore, fetchRanking } from './fetch'
+import {userinfo, ranking} from './mock'
 
 var questionCount = 0 // 回答问题次数
 var level = 0 //当前第几关
@@ -19,8 +20,7 @@ var timer = null // 倒计时对象
 var mugeda = null
 var mugedaScene = null
 var scoreThrough = 0 // 记录关卡分数
-var userinfo = {}
-var rankingData = {}
+var isRoundSuccess = false
 
 // Mugeda元件对象
 var $elem = {
@@ -162,13 +162,26 @@ if (window['Mugeda'] && window['Mugeda']['currentAni']) {
   })
 }
 
+window.initGame = function () {
+  if (!timer) {
+    timer = new Timer(timeOver)
+  }
+  fetchRound()
+  // setRankingRow(ranking)
+  bindEvent()
+}
+
 window.toThrough = function (e, i) {
+  if (i >= throughNum) {
+    return
+  }
   i += 1
   level = i
   questionCount = 0
   answerWrong = 0
   answerRight = 0
   scoreThrough = 0
+  isRoundSuccess = false
   $elem.currentProgress = $elem.progress[i - 1]
   $elem.crosBoxs[i - 1].scene.getObjectByName('scrosP').text = 0
   mugedaScene.gotoPage(i + 2)
@@ -178,41 +191,37 @@ window.toThrough = function (e, i) {
   $elem.succeedBox[level - 1].x = 480
   succeedFun(0, level)
 }
-
-window.initGame = function () {
-  if (!timer) {
-    timer = new Timer(timeOver)
+/**
+ * 请求用户
+ */
+function fetchRound () {
+  for (var i = 1; i < 5; i++) {
+    $elem.through[i].scene.gotoAndPause(0)
   }
-  setRound()
+  fetchUserInfo(setRound)
 }
-
-function setRound () {
-  fetchUserInfo(function (res) {
-    userinfo = res
-    res.scores = res.scores || []
-    //获取当前用户闯关数
-    throughNum = res.scores.length
-    for (var i = 1; i < 5; i++) {
-      $elem.through[i].scene.gotoAndPause(0)
+function setRound (res) {
+  if (!res.scores)
+    res.scores = []
+  //获取当前用户闯关数
+  var lastRound = {round: 1}
+  var maxRound = 1
+  var score = 0
+  $.each(res.scores, function (i, n) {
+    if (n.round >= maxRound) {
+      lastRound = n
+      maxRound = n.round
     }
-
-    var lastRound = {round: 1}
-    var maxRound = 1
-    $.each(userinfo.scores, function (i, n) {
-      if (n.round > maxRound) {
-        lastRound = n
-        maxRound = n.round
-      }
-    })
-    if (lastRound.score > 6) maxRound++
-    throughNum = maxRound
-
-    for (var i = 1; i <= maxRound; i++) {
-      if (i === 1) continue
-      $elem.through[i - 1].scene.gotoAndPause(1)
-    }
-    bindEvent()
+    score += n.score
   })
+  setShareContent(score, maxRound)
+  if (lastRound.score > 6) maxRound++
+  throughNum = maxRound
+
+  for (var i = 1; i <= maxRound; i++) {
+    if (i === 1) continue
+    $elem.through[i - 1].scene.gotoAndPause(1)
+  }
 }
 
 function timeOver () {
@@ -228,74 +237,64 @@ function timeOver () {
   nextQuestion()
 }
 
-function gameOver () {
-  // console.log('gameOver')
-  // timer.pause()
-  // isOver = true
-
-  // var rank = getRankContent(score)
-  // if (rank.frame >=0) {
-  //   $elem.rankIcon.scene.gotoAndPause(rank.frame)
-  //   if (!$elem.rankIcon.visible)
-  //     $elem.rankIcon.visible = true
-  // } else {
-  //   $elem.rankIcon.visible = false
-  // }
-  // $.each($elem.rankText, function (i, $t) {
-  //   $t.text = rank.content[i] || ''
-  // })
-  // if (!score) {
-  //   $elem.rankText[0].top = 25
-  //   $elem.rankText[1].top = 55
-  // } else {
-  //   $elem.rankText[0].top = 0
-  //   $elem.rankText[1].top = 30
-  // }
-  // mugedaScene.nextPage() // 跳转到下一页的开头
-}
-
 /**
  * 创建问题
  */
 function createQuestion () {
   currentQuestion = getQuestion(level, questionCount)
   $elem.rightWrong.scene.gotoAndPause(0)
-  //当前问题(题库题目不够的情况)
-  if (!currentQuestion) {
-    gameOver()
-    return
-  }
   currentQuestion.render()
   questionCount++
 }
-function toRanking () {
+window.toRanking = function () {
+  setRanking()
+}
+function gotoRanking () {
   mugedaScene.gotoPage(8)
+  setRanking()
+}
+function setRanking () {
   fetchRanking(function (data) {
-    var html = ''
-    $.each(data.ranking, function (i, n) {
-      html += '<li class="list-group-item" style="list-style-type: none;height:25px;font-size:12px;margin:15px 0;">'
-      html += '<span class="score" style="width: 40px;float:right;text-align:center">'+(n.total_score)+'</span>'
-      html += '<span class="ranking" style="width: 50px;float:left;text-align:center;">'+(i+1)+'</span>'
-      html += '<span class="headimg" style="width: 24px;height:24px;float:left;border-radius:50%;background:url('+(n.headimgurl)+') center no-repeat;background-size:cover;border:1px solid #7A7A7A;margin-left:5px"></span>'
-      html += '<span class="nickname" style="width: 100px;float:left;padding-left:5px;">'+(n.nickname)+'</span>'
-      html += '</li>'
-    })
-    html = '<ul style="margin:0;padding:0;line-height:25px">' + html + '</ul>'
-    $(mugedaScene.getObjectByName('rankingBox').dom).html(html).css({'overflow-y': 'scroll'})
+    setRankingRow(data)
   })
+}
+function setRankingRow (data) {
+  var html = ''
+  $.each(data.ranking, function (i, n) {
+    html += getRankingRow(n)
+  })
+  html = '<div style="margin:0;padding:0;line-height:25px">' + html + '</div>'
+  $(mugedaScene.getObjectByName('rankingBox').dom).html(html).css({'overflow-y': 'scroll'})
+  if (data.myranking) {
+    var htmlUser = '<div style="margin:0;padding:0;line-height:25px">' + getRankingRow(data.myranking) + '</div>'
+    $(mugedaScene.getObjectByName('rankingUserBox').dom).html(htmlUser)
+  }
+}
+function getRankingRow (n) {
+  var html = ''
+  html += '<div class="list-group-item" style="height:25px;font-size:12px;margin:15px 0;">'
+  html += '<span class="score" style="width: 40px;float:right;text-align:right;padding-right: 15px;">' + (n.total_score) + '分</span>'
+  html += '<span class="ranking" style="width: 50px;float:left;text-align:center;">' + (n.order) + '</span>'
+  html += '<span class="headimg" style="width: 24px;height:24px;float:left;border-radius:50%;background:url(' + (n.headimgurl) + ') center no-repeat;background-size:cover;border:1px solid #7A7A7A;margin-left:5px"></span>'
+  html += '<span class="nickname" style="width: 100px;float:left;padding-left:5px;">' + (n.nickname) + '</span>'
+  html += '</div>'
+  return html
 }
 // 获取下一题
 function nextQuestion () {
-  if (answerWrong === 2) {
+  if (answerWrong === 2 && !isRoundSuccess) {
     // fetchScore(level, scoreThrough)
     succeedFun(-1, level)
-    setTimeout(toRanking, 3000)
+    setTimeout(gotoRanking, 3000)
     return
-  } else if (questionCount >= PASS_QUESTION_COUNT) {
-    fetchScore(level, scoreThrough)
+  } else if (answerRight === 2 && !isRoundSuccess) {
+    isRoundSuccess = true
     succeedFun(1, level)
-    setTimeout(toRanking, 3000)
-    setRound()
+  }
+  if (questionCount === PASS_QUESTION_COUNT) {
+    fetchScore(level, scoreThrough)
+    gotoRanking()
+    fetchRound()
     return
   }
   createQuestion()
@@ -337,26 +336,15 @@ var succeedFun = function (i, level) {
   }
   setTimeout(function () {
     $elem.succeedBox[level].left = 480
-    i === 0 ? timer.replay() : ''
+    i === 0 ? timer.replay() : null
   }, 3000)
 }
-// 向后端提交数据
-// var setScore = function(index,scoreThrough){
-//     // $.get('//', function(res){
-//     // })
-//     setScoreArr.push({
-//       index:index,
-//       score:scoreThrough
-//     })
-// }
 
 function bindEvent () {
   $.each($elem.throughBtn, function (index, $box) {
-    if (index < throughNum) {
-      $box.addEventListener('click', function () {
-        toThrough($box, index)
-      })
-    }
+    $box.addEventListener('click', function () {
+      toThrough($box, index)
+    })
   })
 
   // 九宫格

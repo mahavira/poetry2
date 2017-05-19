@@ -29,50 +29,42 @@ var templateShare2 = '在飞花令新玩法中，我获得了“{rank}”！快�
 export const RANK_SCALE = [{
   maxScore: -1,
   title: '',
-  frame: -1,
   content: '“飞花令”新玩法，你敢来挑战吗？',
   shareContent: '“飞花令”新玩法，你敢来挑战吗？'
 }, {
   maxScore: 0,
   title: '无名',
-  frame: -1,
   content: '卷土重来未可知\n再试一次可吧！',
   shareContent: '“飞花令”新玩法，你敢来挑战吗？'
 }, {
   maxScore: 5,
   title: '初入诗海',
-  frame: 0,
   content: template,
   shareContent: templateShare
 }, {
   maxScore: 10,
   title: '纵横江湖',
-  frame: 1,
   content: template,
   shareContent: templateShare
 }, {
   maxScore: 15,
   title: '醉卧辞海',
-  frame: 2,
   content: template,
   shareContent: templateShare
 }, {
   maxScore: 20,
   title: '杜甫的热泪',
-  frame: 3,
   content: template,
   shareContent: templateShare2
 }, {
   maxScore: 29,
   title: '李白的膝盖',
-  frame: 4,
   content: template,
   shareContent: templateShare2
 
 }, {
   maxScore: 30,
   title: '李白的膝盖',
-  frame: 4,
   content: '您已成功答对了全部题目\n恭喜您！挑战成功！\n荣获{rank}',
   shareContent: templateShare2
 }]
