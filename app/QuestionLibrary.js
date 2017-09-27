@@ -1,4 +1,3 @@
-// import questions from './questions.json'
 import Questions1 from './Questions1.json'
 import Questions2 from './Questions2.json'
 import Questions3 from './Questions3.json'
@@ -6,7 +5,7 @@ import Questions4 from './Questions4.json'
 import Questions5 from './Questions5.json'
 import Question1 from './Question1'
 import Question2 from './Question2'
-import Question from './Question3'
+import Question3 from './Question3'
 import Question4 from './Question4'
 import Question5 from './Question5'
 import { baseRandom } from './helper'
@@ -33,6 +32,7 @@ export default function getQuestion (level, type) {
       break
   }
 }
+
 /**
  * 1获取判断题
  */
@@ -41,6 +41,7 @@ function getQuestion1 () {
   var poemSize = _poems.length - 1
   var index = baseRandom(0, poemSize)
   var poem = _poems[index]
+  if (!poem) alert('出错了!诗词不够用')
   addDiscardQuestion(_poems, poem, index, '1')
   return new Question1(poem)
 }
@@ -53,6 +54,7 @@ function getQuestion2 () {
   var poemSize = _poems.length - 1
   var index = baseRandom(0, poemSize)
   var poem = _poems[index]
+  if (!poem) alert('出错了!诗词不够用')
   addDiscardQuestion(_poems, poem, index, '2')
   return new Question2(poem)
 }
@@ -65,8 +67,9 @@ function getQuestion3 () {
   var poemSize = _poems.length - 1
   var index = baseRandom(0, poemSize)
   var poem = _poems[index]
+  if (!poem) alert('出错了!诗词不够用')
   addDiscardQuestion(_poems, poem, index, '3')
-  return new Question(poem)
+  return new Question3(poem)
 }
 
 /**
@@ -78,8 +81,10 @@ function getQuestion4 () {
   var index = 0
   var poem = []
   for (var i = 0; i < 3; i++) {
+    poemSize = _poems.length - 1
     index = baseRandom(0, poemSize)
     poem.push(_poems[index])
+    if (!poem) alert('出错了!诗词不够用')
     addDiscardQuestion(_poems, _poems[index], index, '4')
   }
   return new Question4(poem)
@@ -93,6 +98,7 @@ function getQuestion5 () {
   var poemSize = _poems.length - 1
   var index = baseRandom(0, poemSize)
   var poem = _poems[index]
+  if (!poem) alert('出错了!诗词不够用')
   addDiscardQuestion(_poems, poem, index, '5')
   return new Question5(poem)
 }
@@ -140,35 +146,46 @@ function addDiscardQuestion (_poems, poem, index, level) {
 // resetQuestion()
 // console.log(questions, discardQuestion)
 
-// function testQuestion () {
-//   $.each(questions, function (i, n) {
-//     $.each(n, function (j, m) {
-//       var question = new Question(m)
-//       question.addAnswerWord(1)
-//       question.removeAnswerWord(1)
-//       question.removeErrorWord()
-//       console.log('words:' + question.words)
-//       console.log('answers:' + question.answers)
-//     })
+// function testQuestion1 () {
+//   $.each(Questions1, function (i,n) {
+//     getQuestion(1)
 //   })
 // }
-// testQuestion()
+// testQuestion1()
 /**
  * 检查诗是否成对
  */
 // function testQuestion2 () {
-//   $.each(questions, function (i, n) {
-//     $.each(n, function (j, m) {
-//       var arr = m.content.split(/[,，.。？?!！]/)
-//       var max = arr.length - 1
-//       for (var i=0;i<Math.floor(arr.length/2);i++) {
-//         if (arr[i*2].length !== arr[i*2+1].length) {
-//           console.log(m.content)
-//         }
-//       }
-//     })
+//   $.each(Questions2, function (i,n) {
+//     getQuestion(2)
 //   })
 // }
+// testQuestion2()
+
+
+// function testQuestion3 () {
+//   $.each(Questions3, function (i,n) {
+//     getQuestion(3)
+//   })
+// }
+// testQuestion3()
+
+
+// function testQuestion4 () {
+//   var l = Math.floor(Questions4.length / 3)
+//   for (var i = 0;i < l; i++) {
+//     getQuestion(4)
+//   }
+// }
+// testQuestion4()
+
+
+// function testQuestion5 () {
+//   $.each(Questions5, function (i,n) {
+//     getQuestion(5)
+//   })
+// }
+// testQuestion5()
 
 /*
  import {LEVEL_SCALE, MAX_QUESTION} from './constant'

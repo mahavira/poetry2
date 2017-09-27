@@ -4,7 +4,6 @@ export default class Question2 {
   constructor (data) {
     $.extend(this, data)
 
-    this.optionaAnsware = shuffle([...this.options])
     this.options = this.options.split('\n')
     switch (this.ans) {
       case 'A':
@@ -60,5 +59,8 @@ export default class Question2 {
       $elem.optionSelect[i].scene.gotoAndPause(0)
       $elem.option[i].text = this.options[i]
     }
+  }
+  getPrompt () {
+    return this.options[this.ans]
   }
 }

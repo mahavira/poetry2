@@ -54,7 +54,8 @@ module.exports = {
       loader: 'json'
     }, {
       test: /\.css$/,
-      loader: ExtractTextPlugin.extract('style', 'css?modules&localIdentName=[local]!postcss')
+      //loader: ExtractTextPlugin.extract('style', 'css?modules&localIdentName=[local]!postcss')
+      loader: 'style!css?modules&localIdentName=[local]'
     }, {
       test: /\.(png|jpg|jpeg)$/,
       loader: 'url-loader?limit=8192'

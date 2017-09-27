@@ -1,17 +1,18 @@
 import 'babel-polyfill'
 import './main.css'
 import Hint from './hint'
+import Prompt from './prompt'
 import Timer from './timer'
 import setShareContent from './share'
 import getQuestion, { resetQuestion } from './QuestionLibrary'
-import { PASS_QUESTION_COUNT } from './constant'
+import { PASS_QUESTION_COUNT, MAX_PASS } from './constant'
 import { fetchUserInfo, fetchScore, fetchRanking } from './fetch'
-import {userinfo, ranking} from './mock'
+import { userinfo, ranking } from './mock'
 
 var questionCount = 0 // 回答问题次数
 var level = 0 //当前第几关
 var score = 0 // 分数
-var throughNum = 0 //当前用户闯关数
+var throughNum = 1 //当前用户闯关数
 var currentQuestion = {} // 当前问题对象
 var answerWrong = 0
 var answerRight = 0
@@ -21,7 +22,7 @@ var mugeda = null
 var mugedaScene = null
 var scoreThrough = 0 // 记录关卡分数
 var isRoundSuccess = false
-
+var audio
 // Mugeda元件对象
 var $elem = {
   // home
@@ -76,8 +77,8 @@ window.$elem = $elem
 if (window['Mugeda'] && window['Mugeda']['currentAni']) {
   console.log('Mugeda')
   mugeda = window['Mugeda']['currentAni']
-  mugeda.addEventListener('renderready', function () {
-    console.log('renderready', mugeda.getScene())
+  mugeda.addEventListener('renderReady', function () {
+    console.log('renderReady', mugeda.getScene())
 
     mugedaScene = mugeda.getScene()
 
@@ -152,26 +153,25 @@ if (window['Mugeda'] && window['Mugeda']['currentAni']) {
       $elem.progress[i - 1].scene.setSegment('progress', 1, 93, false)
     }
 
-    setShareContent(-1)
     $('.mugeda_render_object').css('font-family', 'founderSong')
-
     //ranking
     $elem.shareBtn = mugedaScene.getObjectByName('shareBtn')
-
     initGame()
   })
 }
 
 window.initGame = function () {
+  playAudioBg()
   if (!timer) {
     timer = new Timer(timeOver)
   }
   fetchRound()
+  setRanking()
   // setRankingRow(ranking)
   bindEvent()
 }
 
-window.toThrough = function (e, i) {
+window.toThrough = function (i, reminder) {
   if (i >= throughNum) {
     return
   }
@@ -184,12 +184,39 @@ window.toThrough = function (e, i) {
   isRoundSuccess = false
   $elem.currentProgress = $elem.progress[i - 1]
   $elem.crosBoxs[i - 1].scene.getObjectByName('scrosP').text = 0
-  mugedaScene.gotoPage(i + 2)
+  mugedaScene.gotoPage(i + 3)
   resetQuestion(level)
   createQuestion()
   timer.pause()
   $elem.succeedBox[level - 1].x = 480
-  succeedFun(0, level)
+  if (reminder)
+    succeedFun(0, level)
+}
+
+function playAudioBg() {
+  audio = new Audio()
+  audio.src = './591a9c7acb5963b0378b4988.mp3'
+  audio.preload = true
+  audio.loop = true
+  if (window.WeixinJSBridge) {
+    WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
+      audio.play();
+    }, false);
+  } else {
+    document.addEventListener("WeixinJSBridgeReady", function () {
+      WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
+        audio.play();
+      });
+    }, false);
+  }
+  $('body').append('<div id="audioDom" style="z-index: 20; position: absolute; right: 18px; top: 18px; display: block; transform: rotate(0deg);"><img width="24" class="mugine_audio_on" src="./59c24177d1e0febd008b476b.png"/></div>')
+  $('#audioDom').click(function () {
+    if (audio.paused) {
+      audio.play()
+    } else {
+      audio.pause()
+    }
+  })
 }
 /**
  * 请求用户
@@ -214,12 +241,13 @@ function setRound (res) {
     }
     score += n.score
   })
-  setShareContent(score, maxRound)
+  setShareContent(0)
   if (lastRound.score > 6) maxRound++
   throughNum = maxRound
 
   for (var i = 1; i <= maxRound; i++) {
     if (i === 1) continue
+    if (!$elem.through[i - 1]) continue
     $elem.through[i - 1].scene.gotoAndPause(1)
   }
 }
@@ -245,61 +273,74 @@ function createQuestion () {
   $elem.rightWrong.scene.gotoAndPause(0)
   currentQuestion.render()
   questionCount++
+  isSubmit = false
 }
 window.toRanking = function () {
-  setRanking()
+  gotoRanking()
 }
 function gotoRanking () {
-  mugedaScene.gotoPage(8)
+  mugedaScene.gotoPage(9)
   setRanking()
 }
+var dataRanking = null
 function setRanking () {
+  if (dataRanking === null) {
+    var html = '<div style="margin:0;padding:20px;text-align:center;line-height:25px;font-family:serif;font-size:12px;">正在加载...</div>'
+    $(mugedaScene.getObjectByName('rankingBox').dom).empty().append(html)
+  }
   fetchRanking(function (data) {
     setRankingRow(data)
   })
+  // setRankingRow(ranking)
 }
 function setRankingRow (data) {
+  dataRanking = data
   var html = ''
   $.each(data.ranking, function (i, n) {
     html += getRankingRow(n)
   })
-  html = '<div style="margin:0;padding:0;line-height:25px">' + html + '</div>'
-  $(mugedaScene.getObjectByName('rankingBox').dom).html(html).css({'overflow-y': 'scroll'})
+  html = '<div style="margin:0;padding:0;line-height:25px;font-family: serif;">' + html + '</div>'
+  $(mugedaScene.getObjectByName('rankingBox').dom).css({'overflow-y': 'scroll'}).empty().append(html)
   if (data.myranking) {
-    var htmlUser = '<div style="margin:0;padding:0;line-height:25px">' + getRankingRow(data.myranking) + '</div>'
+    setShareContent(data.myranking.order)
+    var htmlUser = '<div style="margin:0;padding:0;line-height:25px;font-family: serif;overflow: hidden;">' + getRankingRow(data.myranking) + '</div>'
     $(mugedaScene.getObjectByName('rankingUserBox').dom).html(htmlUser)
   }
 }
 function getRankingRow (n) {
   var html = ''
-  html += '<div class="list-group-item" style="height:25px;font-size:12px;margin:15px 0;">'
-  html += '<span class="score" style="width: 40px;float:right;text-align:right;padding-right: 15px;">' + (n.total_score) + '分</span>'
-  html += '<span class="ranking" style="width: 50px;float:left;text-align:center;">' + (n.order) + '</span>'
-  html += '<span class="headimg" style="width: 24px;height:24px;float:left;border-radius:50%;background:url(' + (n.headimgurl) + ') center no-repeat;background-size:cover;border:1px solid #7A7A7A;margin-left:5px"></span>'
-  html += '<span class="nickname" style="width: 100px;float:left;padding-left:5px;">' + (n.nickname) + '</span>'
+  html += '<div class="list-group-item" style="height:25px;font-size:12px;margin:15px 0;overflow: hidden;line-height: 25px;">'
+  html += '<span class="score" style="width: 40px;float:right;text-align:right;padding-right: 15px;overflow: hidden;">' + (n.total_score) + '分</span>'
+  html += '<span class="ranking" style="width: 50px;float:left;text-align:center;overflow: hidden;">' + (n.order) + '</span>'
+  html += '<span class="headimg" style="width: 23px;height:23px;float:left;border-radius:50%;overflow: hidden;background:url(' + (n.headimgurl) + ') center no-repeat;background-size:cover;border:1px solid #7A7A7A;margin-left:5px"></span>'
+  html += '<span class="nickname" style="width: 100px;float:left;padding-left:5px;overflow: hidden;">' + (n.nickname) + '</span>'
   html += '</div>'
   return html
 }
 // 获取下一题
 function nextQuestion () {
-  if (answerWrong === 2 && !isRoundSuccess) {
+  if (answerWrong === 3 && !isRoundSuccess) {
     // fetchScore(level, scoreThrough)
     succeedFun(-1, level)
     setTimeout(gotoRanking, 3000)
     return
-  } else if (answerRight === 2 && !isRoundSuccess) {
+  } else if (questionCount === PASS_QUESTION_COUNT) {
+    fetchScore(level, scoreThrough)
+    fetchRound()
+
     isRoundSuccess = true
     succeedFun(1, level)
-  }
-  if (questionCount === PASS_QUESTION_COUNT) {
-    fetchScore(level, scoreThrough)
-    gotoRanking()
-    fetchRound()
+    setTimeout(function () {
+      if (level + 1 > MAX_PASS) {
+        gotoRanking()
+      } else {
+        toThrough(level)
+      }
+    }, 3000)
     return
   }
   createQuestion()
   timer.replay()
-  isSubmit = false
 }
 // 计算关卡分数
 var scoreRecord = function (index) {
@@ -343,7 +384,7 @@ var succeedFun = function (i, level) {
 function bindEvent () {
   $.each($elem.throughBtn, function (index, $box) {
     $box.addEventListener('click', function () {
-      toThrough($box, index)
+      toThrough(index, true)
     })
   })
 
@@ -389,21 +430,29 @@ function bindEvent () {
   // 判断对错
   $.each($elem.submitBtn, function (index, $box) {
     $box.addEventListener('click', function () {
-
+      if (isSubmit) return
       var isRight = currentQuestion.isRight()
       if (isRight === -1) {
         Hint('noComplete')
         return
       } else if (isRight === 0) {
-        Hint('answerWrong')
+        isSubmit = true
         answerWrong++
+        var prompt = currentQuestion.getPrompt()
+        prompt = prompt.replace(/(^\s*)|(\s*$)/g, '')
+        if (prompt) {
+          Prompt(prompt)
+          setTimeout(nextQuestion, 2000)
+        } else {
+          nextQuestion()
+        }
       } else {
-        Hint('answerRight')
+        isSubmit = true
         answerRight++
         scoreRecord(index)
+        nextQuestion()
       }
       timer.pause()
-      nextQuestion()
     })
   })
   /**
@@ -427,10 +476,4 @@ function bindEvent () {
       currentQuestion.onSelected(index)
     })
   })
-
-  // 分享
-  // $elem.shareBtn.addEventListener("click",function(){
-  //   alert(scoreThrough.toFixed(1))
-  //   setShareContent(score)
-  // })
 }

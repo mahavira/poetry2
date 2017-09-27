@@ -30,6 +30,7 @@ if (isDeveloping) {
   app.use(webpackHotMiddleware(compiler));
   app.use('/static', express.static(__dirname + '/static'));
   app.use('/mugeda', express.static(__dirname + '/mugeda'));
+  app.use('/mugeda2', express.static(__dirname + '/mugeda2'));
   app.get('*', function response(req, res) {
     res.write(middleware.fileSystem.readFileSync(path.join(__dirname, 'dist/index.html')));
     res.end();

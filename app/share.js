@@ -1,32 +1,36 @@
 /**
  * 初始化微信
  */
-import {WX_CONFIG_URL, SHARE_DESC} from './constant'
-import {rankContent} from './rank'
-if (typeof wx != 'undefined') {
-  $.getScript(WX_CONFIG_URL + "?random=" + Math.random(), function () {
-    setWxConfig()
-    wx.ready(function () {
-      setShareContent(-1)
-    });
-    wx.error(function (msg) {
-      console.log(msg)
-    });
-  });
+import { SHARE_DESC, templateShare, templateShareZero } from './constant'
+if (typeof wx !== 'undefined') {
+  setWxConfig()
 }
+var round = 0
+var isReady = false
 function setWxConfig () {
-  wx.config({
-    debug: false,
-    appId: pdmi_appid,
-    timestamp: pdmi_timestamp,
-    nonceStr: pdmi_nonceStr,
-    signature: pdmi_signature,
-    jsApiList: [
-      'checkJsApi',
-      'onMenuShareTimeline',
-      'onMenuShareAppMessage'
-    ]
-  });
+  try {
+    wx.config({
+      debug: false,
+      appId: pdmi_appid,
+      timestamp: pdmi_timestamp,
+      nonceStr: pdmi_nonceStr,
+      signature: pdmi_signature,
+      jsApiList: [
+        'checkJsApi',
+        'onMenuShareTimeline',
+        'onMenuShareAppMessage'
+      ]
+    })
+    wx.ready(function () {
+      isReady = true
+      setShareContent(round)
+    })
+    wx.error(function(res){
+      // alert('error:' + JSON.stringify(res))
+    })
+  } catch (e) {
+    alert(e)
+  }
 }
 export function setWxShare (title, desc) {
   var oA = document.createElement('a')
@@ -37,7 +41,7 @@ export function setWxShare (title, desc) {
   wx_data.desc = desc || SHARE_DESC
   wx_data.imgUrl = shareImg
   wx_data.link = window.location.href
-  if (typeof wx != 'undefined') {
+  if (typeof wx !== 'undefined') {
     wx.onMenuShareTimeline(wx_data)
     wx.onMenuShareAppMessage(wx_data)
   }
@@ -46,15 +50,13 @@ export function setWxShare (title, desc) {
 /**
  * 获取分享内容
  */
-export default function setShareContent (score, round) {
-  var rank = rankContent(score)
-  if (!rank) return
-
-  rank.shareContent = rank.shareContent.replace(/(\{\w*\})/g, function () {
-    if (arguments[0] === '{score}') return score
-    if (arguments[0] === '{rank}') return rank.title
+export default function setShareContent (ranking) {
+  round = ranking
+  if (!isReady) return
+  if (!ranking) return setWxShare(templateShareZero)
+  var title = templateShare.replace(/(\{\w*\})/g, function () {
+    if (arguments[0] === '{ranking}') return ranking
   })
-  var title = rank.shareContent.replace(new RegExp('\n', 'g'), '，')
-  console.log(title)
+  title = title.replace(new RegExp('\n', 'g'), '，')
   setWxShare(title)
 }

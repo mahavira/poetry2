@@ -232,4 +232,7 @@ export default class Question {
       $elem.wordBox[i].text = n
     })
   }
+  getPrompt () {
+    return this.last.join('')
+  }
 }

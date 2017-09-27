@@ -12,7 +12,7 @@ _mrmcp['ga_url'] = _mrmcp['ga_url'] || (('https:' == document.location.protocol 
 _mrmcp['width'] = _mrmcp['width'] || 320;
 _mrmcp['height'] = _mrmcp['height'] || 520;
 _mrmcp['type'] = 'smart';
-_mrmcp['title'] = '青青1';
+_mrmcp['title'] = '玩转诗词';
 _mrmcp['track_bot'] = 'http://cdn.mugeda.com/media/pages/track/track_20131030.html';
 var version = _mrmcp['version'] = _mrmcp['version'] != null ? _mrmcp['version'] : '_0.7.54';
 var w = _mrmcp['width'];
@@ -49,33 +49,24 @@ if(_mrmcp['host']){
         }
     });
 }
-    "default-start";
+    "firstpage-start";
 window.Mugeda = window.Mugeda || { data: {} };
 window.Mugeda.loadProcessHandle = window.Mugeda.loadProcessHandle || {};
 
-Mugeda.isMobile = navigator.userAgent.match(/Android/i) || navigator.userAgent.match(/webOS/i) || navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPad/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/BlackBerry/i) || navigator.userAgent.match(/Windows Phone/i);
-
-Mugeda.loadProcessHandle['default'] = function (opt) {
+Mugeda.loadProcessHandle['firstpage'] = function (opt) {
     opt = opt || {};
-    //var loadInfo = opt.loadInfo;
-	var thisAni = opt.thisAni;
     this.dom = opt.stageDom || thisAni.dom;
-    this.type = 'default';
+    this.type = 'firstpage';
 };
 
 
-Mugeda.loadProcessHandle['default'].prototype.init = function (stageDom, pos) {
+Mugeda.loadProcessHandle['firstpage'].prototype.init = function () {
     if (this.inited) return;
     this.inited = true;
-
-    if(pos == null){
-        pos = ['top:0;left:0;width:100%;height:100%;'];
-    }
-
     var html = '' +
-        '<div style="z-index:20;position: absolute;background: black;'+ pos[0] +'">' +
-        '   <div style="position: absolute;height: 20px; width: 100%;top:20%;color:white;text-align: center;font-size: 12px;">' +
-        '       <div style="padding: 5px;">加载中...<span class="mugeda_percent"></span></div>' +
+        '<div style="z-index:20;position: absolute; width: 100%; height: 100%; left:0; top: 0;">' +
+        '   <div style="position: absolute;height: 20px; width: 100%;top:20%;text-align: center;font-size: 12px;-webkit-text-stroke: 1px white;">' +
+        '       <div style="padding: 5px;opacity: 0;">打开中...</div>' +
         '   </div>' +
         '</div>';
     var dom = document.createElement('div');
@@ -85,45 +76,20 @@ Mugeda.loadProcessHandle['default'].prototype.init = function (stageDom, pos) {
     this.prevPercent = 0;
 
 };
-Mugeda.loadProcessHandle['default'].prototype.update = function (num, all, opt) {
-
-    opt = opt || {};
-
-    var isTotal = opt.isTotal;
-    if (!this.secArr) {
-        var percent = 25 * num / all;
-        if (num === all) {
-            this.secArr = true;
-        }
-    }
-    else {
-        percent = 25 + 75 * num / all;
-        if (num === all) {
-            delete this.secArr;
-        }
-    }
-
-    if (isTotal) percent = Math.floor(num / all * 100);
-
-    if (percent > this.prevPercent) {
-        this.node.querySelectorAll('.mugeda_percent')[0].innerHTML = percent + '%';
-        this.prevPercent = percent;
-    }
-
+Mugeda.loadProcessHandle['firstpage'].prototype.update = function (num, all, opt) {
+    // console.log(num, all);
 };
-Mugeda.loadProcessHandle['default'].prototype.remove = function () {
-    //return;
+Mugeda.loadProcessHandle['firstpage'].prototype.remove = function () {
     var self = this;
     setTimeout(function () {
         self.isOver = true;
-        self.prevPercent = 0;
         self.node.parentNode.removeChild(self.node);
     }, 0)
 };
-window.lineSplit = "default-end";
+window.lineSplit = "firstpage-end";
 
-var loadProcessHandleInstance = Mugeda['loadProcessHandleInstance'] = new Mugeda['loadProcessHandle']['default']({
-    'loadInfo': JSON.parse("{\"style\":\"default\"}"),
+var loadProcessHandleInstance = Mugeda['loadProcessHandleInstance'] = new Mugeda['loadProcessHandle']['firstpage']({
+    'loadInfo': JSON.parse("{\"style\":\"firstpage\",\"logoImage\":\"58f5adc1cb59639f378b46f1.png\",\"backgroundImage\":\"59228449cb5963a2378b4a1f.jpg\",\"logoWidth\":\"40\",\"progressColor\":\"rgba(85, 107, 108, 1)\",\"progressBackground\":\"rgba(255, 255, 255, 1)\"}"),
     'thisAni': {
         'dom': null
     },
@@ -291,7 +257,7 @@ Mugeda.Loader.prototype.start = function () {
     }
 
     
-    var trackString = "\n<div id=\'mugeda_track\'>\n<script>\nvar _mrmma_campid = \'none\';\nvar _mrmma_urid = \'575f681408af60fd008b4583\';\nvar _mrmma_crid = \'58fff0d4cb5963a6378b4776\';\nvar _mrmma_title = \'青青1\';\nvar _mrmma_circle = \'5d045846925f4d6ea7dec6875c6f96b8\';\nvar _mrmma_width = \"320\";\nvar _mrmma_height = \"520\";\nvar _mrmma_type = \'smart\';\nvar title = \'青青1\';\ntitle = title.substr(0, Math.min(title.length, 32));\nvar _mrmma_var1 = \'campid=none&urid=575f681408af60fd008b4583&crid=58fff0d4cb5963a6378b4776\';\nvar _mrmma_var2 = \'circle=5d045846925f4d6ea7dec6875c6f96b8&type=smart&width=320&height=520&display=normal&title=\' + title;\nvar isLocal = !window.location || !window.location.host;\n<\/script>\n<script type=\'text\/javascript\'>\nvar ua = (function () {\nvar replacer = { \'Linux\': \'$L\', \'Windows\\\\s*Phone\': \'$W\', \'Windows\\\\s*NT\': \'$N\', \'Mac\\\\s*OS\': \'$O\', \'Android\': \'$A\', \'Mozilla\': \'$M\', \'Gecko\': \'$G\', \'Trident\': \'$T\', \'AppleWebKit\': \'$K\', \'Chrome\': \'$C\', \'Safari\': \'$S\', \'KHTML\': \'$H\', \'Version\': \'$V\', \'iPhone\': \'$I\', \'Mobile\': \'$B\', \'Build\': \'$b\', \'like\': \'$l\', \'MicroMessenger\': \'$g\', \'MugedaCard\': \'$m\', \';\\\\s+\': \';\', \',\\\\s+\': \',\', \'\\\\s+\\\\(\': \'(\', \'\\\\)\\\\s+\': \')\', \'\\\\s+\\\\[\': \'[\', \'\\\\]\\\\s+\': \']\', \'\\\\s*(\\\\$\\\\w+)\\\\s*\': \'$1\' };\nvar s = navigator.userAgent;\nfor (r in replacer) {\ns = s.replace(new RegExp(r, \'ig\'), replacer[r]);\n}\nreturn s;\n})();\nfunction getClientName() {\nvar ua = navigator.userAgent.toLowerCase();\nif (\/MicroMessenger\/i.test(ua)) return \'weixin\';\nelse if (window.mucard != null) return \'AppVer1\';\nelse if (ua.indexOf(\'mugedacard\') >= 0) return \'AppVer2\';\nelse return \'other\';\n}\nvar _gaq = _gaq || [];\nif(isLocal){\nvar track_url = \'http:\/\/cdn.mugeda.com\/media\/pages\/track\/track_20131030.html\' + \'?\' + _mrmma_var1 + \'&\' + _mrmma_var2;\nvar tracker = document.createElement(\'iframe\');\ntracker.id = \'58fff0d4cb5963a6378b4776\';\ntracker.src = track_url;\ntracker.style.display = \'none\';\ntracker.style.width = \'1px\';\ntracker.style.height = \'1px\';\nvar s = document.body.appendChild(tracker);\n}else{\n_gaq.push([\'_setAccount\', \'UA-38551434-1\']);\n_gaq.push([\'_setCustomVar\', 1, \'Identity Tags\', (typeof _mrmma_var1 == \'undefined\') ? \'none\' : _mrmma_var1]);\n_gaq.push([\'_setCustomVar\', 2, \'Property Tags\', (typeof _mrmma_var2 == \'undefined\') ? \'none\' : _mrmma_var2]);\n_gaq.push([\'_setCustomVar\', 3, \'Client\', getClientName()]);\n_gaq.push([\'_setCustomVar\', 4, \'User Agent\', ua]);\n_gaq.push([\'_trackPageview\']);\n(function() {\nvar ga = document.createElement(\'script\');\nga.type = \'text\/javascript\';\nga.async = true;\nga.src = _mrmcp[\'ga_url\'];\nvar s = document.getElementsByTagName(\'script\')[0];\ns.parentNode.insertBefore(ga, s);\n})();\n}\n<\/script>\n<\/div>\n" + track_pixel;
+    var trackString = "\n<div id=\'mugeda_track\'>\n<script>\nvar _mrmma_campid = \'none\';\nvar _mrmma_urid = \'575f681408af60fd008b4583\';\nvar _mrmma_crid = \'58fff0d4cb5963a6378b4776\';\nvar _mrmma_title = \'玩转诗词\';\nvar _mrmma_circle = \'5d045846925f4d6ea7dec6875c6f96b8\';\nvar _mrmma_width = \"320\";\nvar _mrmma_height = \"520\";\nvar _mrmma_type = \'smart\';\nvar title = \'玩转诗词\';\ntitle = title.substr(0, Math.min(title.length, 32));\nvar _mrmma_var1 = \'campid=none&urid=575f681408af60fd008b4583&crid=58fff0d4cb5963a6378b4776\';\nvar _mrmma_var2 = \'circle=5d045846925f4d6ea7dec6875c6f96b8&type=smart&width=320&height=520&display=normal&title=\' + title;\nvar isLocal = !window.location || !window.location.host;\n<\/script>\n<script type=\'text\/javascript\'>\nvar ua = (function () {\nvar replacer = { \'Linux\': \'$L\', \'Windows\\\\s*Phone\': \'$W\', \'Windows\\\\s*NT\': \'$N\', \'Mac\\\\s*OS\': \'$O\', \'Android\': \'$A\', \'Mozilla\': \'$M\', \'Gecko\': \'$G\', \'Trident\': \'$T\', \'AppleWebKit\': \'$K\', \'Chrome\': \'$C\', \'Safari\': \'$S\', \'KHTML\': \'$H\', \'Version\': \'$V\', \'iPhone\': \'$I\', \'Mobile\': \'$B\', \'Build\': \'$b\', \'like\': \'$l\', \'MicroMessenger\': \'$g\', \'MugedaCard\': \'$m\', \';\\\\s+\': \';\', \',\\\\s+\': \',\', \'\\\\s+\\\\(\': \'(\', \'\\\\)\\\\s+\': \')\', \'\\\\s+\\\\[\': \'[\', \'\\\\]\\\\s+\': \']\', \'\\\\s*(\\\\$\\\\w+)\\\\s*\': \'$1\' };\nvar s = navigator.userAgent;\nfor (r in replacer) {\ns = s.replace(new RegExp(r, \'ig\'), replacer[r]);\n}\nreturn s;\n})();\nfunction getClientName() {\nvar ua = navigator.userAgent.toLowerCase();\nif (\/MicroMessenger\/i.test(ua)) return \'weixin\';\nelse if (window.mucard != null) return \'AppVer1\';\nelse if (ua.indexOf(\'mugedacard\') >= 0) return \'AppVer2\';\nelse return \'other\';\n}\nvar _gaq = _gaq || [];\nif(isLocal){\nvar track_url = \'http:\/\/cdn.mugeda.com\/media\/pages\/track\/track_20131030.html\' + \'?\' + _mrmma_var1 + \'&\' + _mrmma_var2;\nvar tracker = document.createElement(\'iframe\');\ntracker.id = \'58fff0d4cb5963a6378b4776\';\ntracker.src = track_url;\ntracker.style.display = \'none\';\ntracker.style.width = \'1px\';\ntracker.style.height = \'1px\';\nvar s = document.body.appendChild(tracker);\n}else{\n_gaq.push([\'_setAccount\', \'UA-38551434-1\']);\n_gaq.push([\'_setCustomVar\', 1, \'Identity Tags\', (typeof _mrmma_var1 == \'undefined\') ? \'none\' : _mrmma_var1]);\n_gaq.push([\'_setCustomVar\', 2, \'Property Tags\', (typeof _mrmma_var2 == \'undefined\') ? \'none\' : _mrmma_var2]);\n_gaq.push([\'_setCustomVar\', 3, \'Client\', getClientName()]);\n_gaq.push([\'_setCustomVar\', 4, \'User Agent\', ua]);\n_gaq.push([\'_trackPageview\']);\n(function() {\nvar ga = document.createElement(\'script\');\nga.type = \'text\/javascript\';\nga.async = true;\nga.src = _mrmcp[\'ga_url\'];\nvar s = document.getElementsByTagName(\'script\')[0];\ns.parentNode.insertBefore(ga, s);\n})();\n}\n<\/script>\n<\/div>\n" + track_pixel;
     if (document.readyState == 'complete') {
         var div = document.createElement('div');
         div.innerHTML = trackString;

@@ -4,7 +4,6 @@ export default class Question1 {
     $.extend(this, data)
     this.selected = -1
     this.ans = this.ans === '正确' ? 1 : 2
-    console.log(this)
   }
 
   /**
@@ -39,5 +38,8 @@ export default class Question1 {
       return
     }
     $elem.Question1Box.text = this.title
+  }
+  getPrompt () {
+    return this.reanrk
   }
 }

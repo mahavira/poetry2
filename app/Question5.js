@@ -96,4 +96,8 @@ export default class Question5 {
       $elem.T4Border[i].scene.getObjectByName('T4Row').text = this.order[i]
     }
   }
+
+  getPrompt () {
+    return this.content.replaceAll('\n', '<br/>')
+  }
 }
